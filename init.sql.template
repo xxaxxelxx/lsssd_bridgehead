@@ -1,0 +1,30 @@
+DROP DATABASE IF EXISTS silenceDB;
+CREATE DATABASE silenceDB;
+
+DROP TABLE IF EXISTS silenceDB.status;
+CREATE TABLE IF NOT EXISTS silenceDB.status (
+    mntpnt VARCHAR(190) NOT NULL,
+    alive INT,
+    status INT,
+    since INT,
+    PRIMARY KEY (mntpnt)
+)  ENGINE=INNODB;
+GRANT SELECT,UPDATE ON silenceDB.status TO 'detector'@'%' IDENTIFIED BY '<MYSQL_DETECTOR_PASSWORD>';
+
+DROP TABLE IF EXISTS silenceDB.detectorload;
+CREATE TABLE IF NOT EXISTS silenceDB.detectorload (
+    ipaddr VARCHAR(190) NOT NULL,
+    alive INT,
+    cpuidle INT,
+    nload INT,
+    PRIMARY KEY (ipaddr)
+)  ENGINE=INNODB;
+GRANT SELECT,INSERT,UPDATE ON silenceDB.detectorload TO 'detector'@'%' IDENTIFIED BY '<MYSQL_DETECTOR_PASSWORD>';
+
+DROP TABLE IF EXISTS silenceDB.config;
+CREATE TABLE IF NOT EXISTS silenceDB.config (
+    confkey VARCHAR(128) NOT NULL,
+    confvalue  VARCHAR(256),
+    PRIMARY KEY (confkey)
+)  ENGINE=INNODB;
+GRANT SELECT ON silenceDB.config TO 'detector'@'%' IDENTIFIED BY '<MYSQL_DETECTOR_PASSWORD>';

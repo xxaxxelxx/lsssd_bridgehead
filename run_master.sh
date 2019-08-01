@@ -1,16 +1,8 @@
 #!/bin/bash
 
-# Pruning Images
-docker image prune -af
-
-# Pruning Volumes
-docker volume prune -f
-
-# Creating Watchlist Volume
-docker volume create WatchList
-
-
-# Creating and running container
-docker run -d --name VolumeControl -p 65522:22 -v WatchList:/data/watchlist xxaxxelxx/lsssd_volumecontrol
+MYSQL_ROOT_PASSWORD="$(cat secrets/MYSQL_ROOT_PASSWORD)"
+MYSQL_HOST="192.168.100.124"
+MYSQL_PORT="63306"
+docker run -d --name Maintenancer -v CommandVolume:/volumes/CommandVolume -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_HOST=$MYSQL_HOST -e MYSQL_PORT=$MYSQL_PORT --restart always xxaxxelxx/lsssd_maintenancer
 
 exit $?

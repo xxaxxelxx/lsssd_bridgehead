@@ -1,42 +1,43 @@
 #!/bin/bash
-# 2019JUL31
+# 2019JUL30
 # LSSSD - Liquidsoap Stream Silence Detector
 # Starter pack
-# Detector Module
+# Main Datacenter Module
+
+# HOWTO: Run ./run_prune.sh to cleanup all the stuff before you start this script.
+# Pruning clears ALL data, conainers, volumes and so on, but DO NOT WORRY:
+# This ('run_init_master.sh' aka ME) rebuilds all the stuff you need
+# and runs the MASTER.
+# To run a Detector, run 'run_init_detector.sh'
+
+# INFO: The whole system consists of two roles. Master and Detector.
+# You have to run ONE Master role and N Detector roles.
+# Master and Detector can rise on the same host but i would prefer use of different hosts.
+# A Detectors network and CPU load will be measured.
+# One Detector on one host can guard a large number of stream URLs limited by detector hosts load.
+# If the limits are reached, simply create additional Detector(s).
 
 # PRE
 TSTAMP=$(date "+%s")
+which mcedit 2>/dev/null | grep mcedit > /dev/null && echo "mcedit found" || apt-get install -yy mc
 
-# Creating Command Control Volume
-#docker volume create CommandVolume
-
-# Creating and running Command Volume Control container
-#docker run -d --name CommandVolumeControl -p 65522:22 -v CommandVolume:/volumes/CommandVolume --restart always xxaxxelxx/lsssd_volumecontrol
-#docker cp WATCHLIST CommandVolumeControl:/volumes/CommandVolume/WATCHLIST
-#docker cp CONFIG CommandVolumeControl:/volumes/CommandVolume/CONFIG
+# TEST CONFIG
+test -r "CONFIG_DETECTOR" || exit 1
+mcedit CONFIG_DETECTOR
+. CONFIG_DETECTOR
+test -r "$MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE" || exit 1
+test "x$MASTERSERVER_MYSQL_PORT" == "x" && exit 1
+test "x$MASTERSERVER_IP" == "x" && exit 1
+test "x$DETECTORHOST_IP" == "x" && exit 1
 
 # Database stuff
-#MYSQL_ROOT_PASSWORD="$(cat secrets/MYSQL_ROOT_PASSWORD)"
-MYSQL_DETECTOR_PASSWORD="$(cat secrets/MYSQL_DETECTOR_PASSWORD)"
+MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE)"
 
-#docker run -d --name MariaDB -p 63306:3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --restart always mariadb:latest
-#while true; do
-#    sleep 5
-#    docker exec -i MariaDB mysql -u root -p$MYSQL_ROOT_PASSWORD <<< $(cat init.sql.template | sed "s|<MYSQL_DETECTOR_PASSWORD>|$MYSQL_DETECTOR_PASSWORD|g") 2>/dev/null && break
-#done
-#docker exec -it MariaDB sed -e 's|#bind-address=0.0.0.0|bind-address=0.0.0.0|' -i /etc/mysql/my.cnf
-#docker restart MariaDB
-
-
-
-
-
-
-
+# Creating Mainenancer Container
+docker run -d --name ReporterCPU -e MYSQL_DETECTOR_PASSWORD=$MYSQL_DETECTOR_PASSWORD -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT -e DETECTORHOST_IP=$DETECTORHOST_IP --restart always xxaxxelxx/lsssd_report_cpu
 
 # POST
 echo "Ready! ($(( $(date "+%s") - $TSTAMP )) s)"
-
 
 exit $?
 

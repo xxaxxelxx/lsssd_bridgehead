@@ -11,15 +11,15 @@ CREATE TABLE IF NOT EXISTS silenceDB.status (
 )  ENGINE=INNODB;
 GRANT SELECT,UPDATE ON silenceDB.status TO 'detector'@'%' IDENTIFIED BY '<MYSQL_DETECTOR_PASSWORD>';
 
-DROP TABLE IF EXISTS silenceDB.detectorload;
-CREATE TABLE IF NOT EXISTS silenceDB.detectorload (
-    ipaddr VARCHAR(190) NOT NULL,
-    alive INT,
-    cpuidle INT,
-    nload INT,
-    PRIMARY KEY (ipaddr)
-)  ENGINE=INNODB;
-GRANT SELECT,INSERT,UPDATE ON silenceDB.detectorload TO 'detector'@'%' IDENTIFIED BY '<MYSQL_DETECTOR_PASSWORD>';
+#DROP TABLE IF EXISTS silenceDB.detectorload;
+#CREATE TABLE IF NOT EXISTS silenceDB.detectorload (
+#    ipaddr VARCHAR(190) NOT NULL,
+#    alive INT,
+#    cpuidle INT,
+#    nload INT,
+#    PRIMARY KEY (ipaddr)
+#)  ENGINE=INNODB;
+#GRANT SELECT,INSERT,UPDATE ON silenceDB.detectorload TO 'detector'@'%' IDENTIFIED BY '<MYSQL_DETECTOR_PASSWORD>';
 
 DROP TABLE IF EXISTS silenceDB.config;
 CREATE TABLE IF NOT EXISTS silenceDB.config (

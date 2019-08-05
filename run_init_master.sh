@@ -22,13 +22,14 @@ TSTAMP=$(date "+%s")
 which mcedit 2>/dev/null | grep mcedit > /dev/null && echo "mcedit found" || apt-get install -yy mc
 
 # TEST CONFIG
-test -r "CONFIG" || exit 1
-mcedit CONFIG
-. CONFIG
+test -r "CONFIG_MASTER" || exit 1
+mcedit CONFIG_MASTER
+. CONFIG_MASTER
 test -r "$MASTERSERVER_MYSQL_SECRET_ROOT_FILE" || exit 1
 test -r "$MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE" || exit 1
 test "x$MASTERSERVER_SSH_PORT" == "x" && exit 1
 test "x$MASTERSERVER_MYSQL_PORT" == "x" && exit 1
+test "x$MASTERSERVER_IP" == "x" && exit 1
 
 # Creating Command Control Volume
 docker volume create CommandVolume
@@ -36,7 +37,7 @@ docker volume create CommandVolume
 # Creating and running Command Volume Control container
 docker run -d --name CommandVolumeControl -p $MASTERSERVER_SSH_PORT:22 -v CommandVolume:/volumes/CommandVolume --restart always xxaxxelxx/lsssd_volumecontrol
 docker cp WATCHLIST CommandVolumeControl:/volumes/CommandVolume/WATCHLIST
-docker cp CONFIG CommandVolumeControl:/volumes/CommandVolume/CONFIG
+docker cp CONFIG_MASTER CommandVolumeControl:/volumes/CommandVolume/CONFIG_MASTER
 
 # Database stuff
 MYSQL_ROOT_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_ROOT_FILE)"

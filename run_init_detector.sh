@@ -21,8 +21,27 @@
 TSTAMP=$(date "+%s")
 which mcedit 2>/dev/null | grep mcedit > /dev/null && echo "mcedit found" || apt-get install -yy mc
 
+IF_AVAIL="$(ls /sys/class/net | sed 's|\ *|\ |' | tr '\n' '\ ')"
+echo "Available network interfaces: $IF_AVAIL"
+while true; do
+    echo -ne "Select one: "
+    read XIF
+    echo "$IF_AVAIL" | grep -w $XIF > /dev/null && break || echo "There is no interface like $XIF."
+done
+echo
+XIF_SPEED="$(cat /sys/class/net/$XIF/speed)"
+while true; do
+    if [ $XIF_SPEED -ge 0 ]; then
+	echo -ne "Interface $XIF speed check returns $XIF_SPEED Mbit/s.  Set a value [Mbit/s]: "
+    else
+	echo -ne "Interface $XIF speed not detectable. Set a value [Mbit/s]: "
+    fi
+    read XIF_SPEED
+    test $XIF_SPEED -gt 0 && break || echo "Speed value $XIF_SPEED does not fit."
+done
 
-#ls /sys/class/net
+DETECTORHOST_IF=$XIF
+DETECTORHOST_IF_SPEED=$XIF_SPEED
 
 # TEST CONFIG
 test -r "CONFIG_DETECTOR" || exit 1
@@ -40,6 +59,7 @@ docker run -d --name Detector -v /sys:/host/sys:ro -v /proc:/host/proc:ro -e MYS
     -e MYSQL_HOST=$MASTERSERVER_IP \
     -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT \
     -e DETECTORHOST_IF=$DETECTORHOST_IF \
+    -e DETECTORHOST_IF_SPEED=$DETECTORHOST_IF_SPEED \
     -e DETECTORHOST_IF_MAXLOAD_PERCENT=$DETECTORHOST_IF_MAXLOAD_PERCENT \
     -e DETECTORHOST_MAXCPULOAD_PERCENT=$DETECTORHOST_MAXCPULOAD_PERCENT \
     -e ALIVE_LIMIT=$ALIVE_LIMIT \

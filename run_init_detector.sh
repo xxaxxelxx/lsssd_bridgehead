@@ -28,7 +28,7 @@ while true; do
     read XIF
     echo "$IF_AVAIL" | grep -w $XIF > /dev/null && break || echo "There is no interface like $XIF."
 done
-echo
+
 XIF_SPEED="$(cat /sys/class/net/$XIF/speed)"
 while true; do
     if [ $XIF_SPEED -ge 0 ]; then

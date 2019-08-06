@@ -21,6 +21,9 @@
 TSTAMP=$(date "+%s")
 which mcedit 2>/dev/null | grep mcedit > /dev/null && echo "mcedit found" || apt-get install -yy mc
 
+
+ls /sys/class/net
+
 # TEST CONFIG
 test -r "CONFIG_DETECTOR" || exit 1
 mcedit CONFIG_DETECTOR
@@ -28,13 +31,12 @@ mcedit CONFIG_DETECTOR
 test -r "$MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE" || exit 1
 test "x$MASTERSERVER_MYSQL_PORT" == "x" && exit 1
 test "x$MASTERSERVER_IP" == "x" && exit 1
-test "x$DETECTORHOST_IP" == "x" && exit 1
 
 # Database stuff
 MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE)"
 
 # Creating Mainenancer Container
-docker run -d --name ReporterCPU -e MYSQL_DETECTOR_PASSWORD=$MYSQL_DETECTOR_PASSWORD -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT -e DETECTORHOST_IP=$DETECTORHOST_IP --restart always xxaxxelxx/lsssd_report_cpu
+docker run -d --name Detector -v /sys:/host/sys:ro -v /proc:/host/proc:ro -e MYSQL_DETECTOR_PASSWORD=$MYSQL_DETECTOR_PASSWORD -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT --restart always xxaxxelxx/lsssd_detector
 
 # POST
 echo "Ready! ($(( $(date "+%s") - $TSTAMP )) s)"

@@ -29,6 +29,7 @@ test -r "$MASTERSERVER_MYSQL_SECRET_ROOT_FILE" || exit 1
 test -r "$MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE" || exit 1
 test "x$MASTERSERVER_SSH_PORT" == "x" && exit 1
 test "x$MASTERSERVER_MYSQL_PORT" == "x" && exit 1
+test "x$MASTERSERVER_SNMPD_PORT" == "x" && exit 1
 test "x$MASTERSERVER_IP" == "x" && exit 1
 
 # Creating Command Control Volume

@@ -22,15 +22,16 @@ TSTAMP=$(date "+%s")
 which mcedit 2>/dev/null | grep mcedit > /dev/null && echo "mcedit found" || apt-get install -yy mc
 
 # CREATE RANDOM DATABASE PASSWORDS
-echo $RANDOM | md5sum | awk '{print $1}' > secrets/MYSQL_ROOT_PASSWORD
+test -r echo $RANDOM | md5sum | awk '{print $1}' > secrets/MYSQL_ROOT_PASSWORD
 echo $RANDOM | md5sum | awk '{print $1}' > secrets/MYSQL_DETECTOR_PASSWORD
 
 # TEST CONFIG
 test -r "CONFIG_MASTER" || exit 1
 mcedit CONFIG_MASTER
 . CONFIG_MASTER
-test -r "$MASTERSERVER_MYSQL_SECRET_ROOT_FILE" || exit 1
-test -r "$MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE" || exit 1
+test -d $(dirname "$MASTERSERVER_MYSQL_SECRET_ROOT_FILE") || mkdir -p "$(dirname "$MASTERSERVER_MYSQL_SECRET_ROOT_FILE")"
+test -r "$MASTERSERVER_MYSQL_SECRET_ROOT_FILE" || echo $RANDOM | md5sum | awk '{print $1}' > "$MASTERSERVER_MYSQL_SECRET_ROOT_FILE"
+test -r "$MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE" || echo $RANDOM | md5sum | awk '{print $1}' > "$MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE"
 test "x$MASTERSERVER_SSH_PORT" == "x" && exit 1
 test "x$MASTERSERVER_MYSQL_PORT" == "x" && exit 1
 test "x$MASTERSERVER_SNMPD_PORT" == "x" && exit 1

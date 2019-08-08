@@ -21,10 +21,6 @@
 TSTAMP=$(date "+%s")
 which mcedit 2>/dev/null | grep mcedit > /dev/null && echo "mcedit found" || apt-get install -yy mc
 
-# CREATE RANDOM DATABASE PASSWORDS
-test -r echo $RANDOM | md5sum | awk '{print $1}' > secrets/MYSQL_ROOT_PASSWORD
-echo $RANDOM | md5sum | awk '{print $1}' > secrets/MYSQL_DETECTOR_PASSWORD
-
 # TEST CONFIG
 test -r "CONFIG_MASTER" || exit 1
 mcedit CONFIG_MASTER

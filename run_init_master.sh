@@ -31,6 +31,8 @@ test "x$MASTERSERVER_SSH_PORT" == "x" && exit 1
 test "x$MASTERSERVER_MYSQL_PORT" == "x" && exit 1
 test "x$MASTERSERVER_SNMPD_PORT" == "x" && exit 1
 test "x$MASTERSERVER_IP" == "x" && exit 1
+test "x$ALIVE_LIMIT" == "x" && exit 1
+test "x$TZ" == "x" && exit 1
 
 # Creating Command Control Volume
 docker volume create CommandVolume
@@ -54,6 +56,9 @@ docker restart MariaDB
 
 # Creating Mainenancer Container
 docker run -d --name Maintenancer -v CommandVolume:/volumes/CommandVolume -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT --restart always xxaxxelxx/lsssd_maintenancer
+
+# Creating SNMPd Container
+docker run -d --name SNMPd -e MYSQL_DETECTOR_PASSWORD=$MYSQL_DETECTOR_PASSWORD -e SNMPD_HOST=$MASTERSERVER_IP -e SNMPD_COMMUNITY=$MASTERSERVER_SNMPD_COMMUNITY -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT -e ALIVE_LIMIT=$ALIVE_LIMIT -e TZ=$TZ -p $MASTERSERVER_SNMPD_PORT:161/udp --restart always xxaxxelxx/lsssd_snmpd
 
 # POST
 echo "Ready! ($(( $(date "+%s") - $TSTAMP )) s)"

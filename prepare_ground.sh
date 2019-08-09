@@ -2,7 +2,7 @@
 
 
 # tools
-apt-get install -y rsync rdate mc mlocate mariadb-client
+apt-get install -y rsync rdate mc mlocate mariadb-client glances
 
 # docker
 apt-get -y install apt-transport-https ca-certificates curl gnupg2 software-properties-common

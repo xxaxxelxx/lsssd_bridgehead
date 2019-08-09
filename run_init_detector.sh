@@ -66,7 +66,11 @@ RUNCMD="docker run -d --name Detector -v /sys:/host/sys:ro -v /proc:/host/proc:r
     -e ALIVE_LIMIT=$ALIVE_LIMIT \
     --restart always xxaxxelxx/lsssd_detector"
 eval $RUNCMD
-echo "$RUNCMD" > "RUN/$(echo "$RUNCMD" | sed 's|.*\-\-name\ ||' | awk '{print $1}').sh"
+RUNFILE="RUN/$(echo "$RUNCMD" | sed 's|.*\-\-name\ ||' | awk '{print $1}').sh"
+echo "#!/bin/bash" > $RUNFILE
+echo "${RUNCMD}" >> $RUNFILE
+echo "exit $?" >> $RUNFILE
+chmod u+x $RUNFILE
 
 # POST
 echo "Ready! ($(( $(date "+%s") - $TSTAMP )) s)"

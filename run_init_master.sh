@@ -47,7 +47,9 @@ docker cp CONFIG_MASTER CommandVolumeControl:/volumes/CommandVolume/CONFIG_MASTE
 MYSQL_ROOT_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_ROOT_FILE | head -n 1 | tr -d '\n')"
 MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE | head -n 1 | tr -d '\n')"
 
-docker run -d --name MariaDB -p $MASTERSERVER_MYSQL_PORT:3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --restart always mariadb:latest
+RUNCMD="docker run -d --name MariaDB -p $MASTERSERVER_MYSQL_PORT:3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --restart always mariadb:latest"
+eval $RUNCMD
+#docker run -d --name MariaDB -p $MASTERSERVER_MYSQL_PORT:3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --restart always mariadb:latest
 while true; do
     sleep 5
     docker exec -i MariaDB mysql -u root -p$MYSQL_ROOT_PASSWORD <<< $(cat init.sql.template | sed "s|<MYSQL_DETECTOR_PASSWORD>|$MYSQL_DETECTOR_PASSWORD|g") 2>/dev/null && break

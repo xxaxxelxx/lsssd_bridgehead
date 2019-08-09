@@ -39,7 +39,14 @@ test "x$TZ" == "x" && exit 1
 docker volume create CommandVolume
 
 # Creating and running Command Volume Control container
-docker run -d --name CommandVolumeControl -p $MASTERSERVER_SSH_PORT:22 -v CommandVolume:/volumes/CommandVolume --restart always xxaxxelxx/lsssd_volumecontrol
+RUNCMD="docker run -d --name CommandVolumeControl -p $MASTERSERVER_SSH_PORT:22 -v CommandVolume:/volumes/CommandVolume --restart always xxaxxelxx/lsssd_volumecontrol"
+eval $RUNCMD
+RUNFILE="RUN/$(echo "$RUNCMD" | sed 's|.*\-\-name\ ||' | awk '{print $1}').sh"
+echo "#!/bin/bash" > $RUNFILE
+echo "${RUNCMD}" >> $RUNFILE
+echo "exit \$?" >> $RUNFILE
+chmod u+x $RUNFILE
+
 docker cp WATCHLIST CommandVolumeControl:/volumes/CommandVolume/WATCHLIST
 docker cp CONFIG_MASTER CommandVolumeControl:/volumes/CommandVolume/CONFIG_MASTER
 
@@ -49,7 +56,11 @@ MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE | head -
 
 RUNCMD="docker run -d --name MariaDB -p $MASTERSERVER_MYSQL_PORT:3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --restart always mariadb:latest"
 eval $RUNCMD
-#docker run -d --name MariaDB -p $MASTERSERVER_MYSQL_PORT:3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --restart always mariadb:latest
+RUNFILE="RUN/$(echo "$RUNCMD" | sed 's|.*\-\-name\ ||' | awk '{print $1}').sh"
+echo "#!/bin/bash" > $RUNFILE
+echo "${RUNCMD}" >> $RUNFILE
+echo "exit \$?" >> $RUNFILE
+chmod u+x $RUNFILE
 while true; do
     sleep 5
     docker exec -i MariaDB mysql -u root -p$MYSQL_ROOT_PASSWORD <<< $(cat init.sql.template | sed "s|<MYSQL_DETECTOR_PASSWORD>|$MYSQL_DETECTOR_PASSWORD|g") 2>/dev/null && break
@@ -58,10 +69,22 @@ docker exec -it MariaDB sed -e 's|#bind-address=0.0.0.0|bind-address=0.0.0.0|' -
 docker restart MariaDB
 
 # Creating Mainenancer Container
-docker run -d --name Maintenancer -v CommandVolume:/volumes/CommandVolume -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT --restart always xxaxxelxx/lsssd_maintenancer
+RUNCMD="docker run -d --name Maintenancer -v CommandVolume:/volumes/CommandVolume -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT --restart always xxaxxelxx/lsssd_maintenancer"
+eval $RUNCMD
+RUNFILE="RUN/$(echo "$RUNCMD" | sed 's|.*\-\-name\ ||' | awk '{print $1}').sh"
+echo "#!/bin/bash" > $RUNFILE
+echo "${RUNCMD}" >> $RUNFILE
+echo "exit \$?" >> $RUNFILE
+chmod u+x $RUNFILE
 
 # Creating SNMPd Container
-docker run -d --name SNMPd -e MYSQL_DETECTOR_PASSWORD=$MYSQL_DETECTOR_PASSWORD -e SNMPD_HOST=$MASTERSERVER_IP -e SNMPD_COMMUNITY=$MASTERSERVER_SNMPD_COMMUNITY -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT -e ALIVE_LIMIT=$ALIVE_LIMIT -e TZ=$TZ -p $MASTERSERVER_SNMPD_PORT:161/udp --restart always xxaxxelxx/lsssd_snmpd
+RUNCMD="docker run -d --name SNMPd -e MYSQL_DETECTOR_PASSWORD=$MYSQL_DETECTOR_PASSWORD -e SNMPD_HOST=$MASTERSERVER_IP -e SNMPD_COMMUNITY=$MASTERSERVER_SNMPD_COMMUNITY -e MYSQL_HOST=$MASTERSERVER_IP -e MYSQL_PORT=$MASTERSERVER_MYSQL_PORT -e ALIVE_LIMIT=$ALIVE_LIMIT -e TZ=$TZ -p $MASTERSERVER_SNMPD_PORT:161/udp --restart always xxaxxelxx/lsssd_snmpd"
+eval $RUNCMD
+RUNFILE="RUN/$(echo "$RUNCMD" | sed 's|.*\-\-name\ ||' | awk '{print $1}').sh"
+echo "#!/bin/bash" > $RUNFILE
+echo "${RUNCMD}" >> $RUNFILE
+echo "exit \$?" >> $RUNFILE
+chmod u+x $RUNFILE
 
 # POST
 echo "Ready! ($(( $(date "+%s") - $TSTAMP )) s)"

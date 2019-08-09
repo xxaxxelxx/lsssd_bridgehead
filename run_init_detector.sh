@@ -53,7 +53,7 @@ test "x$MASTERSERVER_MYSQL_PORT" == "x" && exit 1
 test "x$MASTERSERVER_IP" == "x" && exit 1
 
 # Database stuff
-MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE | tr -d '\n')"
+MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE | head -n 1 | tr -d '\n')"
 
 # Creating Mainenancer Container
 docker run -d --name Detector -v /sys:/host/sys:ro -v /proc:/host/proc:ro -e MYSQL_DETECTOR_PASSWORD=$MYSQL_DETECTOR_PASSWORD \

@@ -44,8 +44,8 @@ docker cp WATCHLIST CommandVolumeControl:/volumes/CommandVolume/WATCHLIST
 docker cp CONFIG_MASTER CommandVolumeControl:/volumes/CommandVolume/CONFIG_MASTER
 
 # Database stuff
-MYSQL_ROOT_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_ROOT_FILE | tr -d '\n')"
-MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE | tr -d '\n')"
+MYSQL_ROOT_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_ROOT_FILE | head -n 1 | tr -d '\n')"
+MYSQL_DETECTOR_PASSWORD="$(cat $MASTERSERVER_MYSQL_SECRET_DETECTOR_FILE | head -n 1 | tr -d '\n')"
 
 docker run -d --name MariaDB -p $MASTERSERVER_MYSQL_PORT:3306 -e MYSQL_ROOT_PASSWORD=$MYSQL_ROOT_PASSWORD --restart always mariadb:latest
 while true; do

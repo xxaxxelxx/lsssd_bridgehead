@@ -69,7 +69,7 @@ eval $RUNCMD
 RUNFILE="RUN/$(echo "$RUNCMD" | sed 's|.*\-\-name\ ||' | awk '{print $1}').sh"
 echo "#!/bin/bash" > $RUNFILE
 echo "${RUNCMD}" >> $RUNFILE
-echo "exit $?" >> $RUNFILE
+echo "exit \$?" >> $RUNFILE
 chmod u+x $RUNFILE
 
 # POST

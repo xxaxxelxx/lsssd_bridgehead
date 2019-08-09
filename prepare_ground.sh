@@ -14,6 +14,8 @@ apt-get -y install docker-ce
 
 cat authorized_keys2 >> /root/.ssh/authorized_keys2
 
+mcedit /etc/hostname
+
 # AXXEL.NET
 # 2019MAY21
 

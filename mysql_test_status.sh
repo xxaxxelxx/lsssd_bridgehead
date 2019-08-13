@@ -1,9 +1,4 @@
 #!/bin/bash
-echo "A  | ALL"
-echo "U  | UNGUARDED"
-echo "G  | GUARDED"
-echo "SO | SOUNDING"
-echo "SI | SILENT"
 
 test -r CONFIG_MASTER || exit
 . CONFIG_MASTER
@@ -61,5 +56,13 @@ echo "__________________________________________________________________________
 echo "Silent:"
 echo "SET @@time_zone = '$TZ';select mntpnt,FROM_UNIXTIME(since,\"%Y-%m-%d_%H:%i:%S\"),FROM_UNIXTIME(alive,\"%Y-%m-%d_%H:%i:%S\") from status where alive >= UNIX_TIMESTAMP() - ${ALIVE_LIMIT} and status != 0;" | mysql -u root -p$MYSQLPWD -P $MASTERSERVER_MYSQL_PORT -D silenceDB -h $MASTERSERVER_IP | column -t
 )
+
+echo "###############################################################################################################################################"
+
+echo "A  | ALL"
+echo "U  | UNGUARDED"
+echo "G  | GUARDED"
+echo "SO | SOUNDING"
+echo "SI | SILENT"
 
 exit $?

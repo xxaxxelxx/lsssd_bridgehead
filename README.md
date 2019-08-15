@@ -31,15 +31,14 @@ How to start:
 * Install git.
 * Clone the bridgehead: ```git clone https://github.com/xxaxxelxx/lsssd_bridgehead.git```
 * ```cd lsssd_bridgehead```
-* ```cd lsssd_bridgehead```
+* ```./prepare_ground.sh```
+* ```./run_init_master.sh``` on the MASTER or
+* ```./run_init_detector.sh``` on a DETECTOR.
+You have to set some passwords, be sure they correspond on both MASTER and DETECTOR.
 
+Thats all. ;)
 
-
-
-
-
-If you need some help do not hesitate and ask me anything (project related): x@axxel.net
-
+If you need some help do not hesitate and ask me anything (project related ;): x@axxel.net
 
 ## License
 

@@ -11,13 +11,13 @@ while true; do
     while read LINE;do
 	MNTPNT="$(echo "$LINE" | awk '{print $1}')"
 	test "x$MNTPNT" == "x" && continue
-	echo "INSERT IGNORE INTO status (mntpnt, alive, status, since) VALUES ('$MNTPNT', 0, 1, 0);" | mysql -u root -prfc1830rfc1830rfc1830 -D silenceDB
+	echo "INSERT IGNORE INTO status (mntpnt, alive, status, since) VALUES ('$MNTPNT', 0, 1, 0);" | mysql -u root -prfc1830rfc1830rfc1830 -D silenceDB --connect-timeout=10
     done
     )
 
-    echo "select mntpnt from status;" | mysql -u root -prfc1830rfc1830rfc1830 -D silenceDB --skip-column-names | (
+    echo "select mntpnt from status;" | mysql -u root -prfc1830rfc1830rfc1830 -D silenceDB --skip-column-names --connect-timeout=10 | (
 	while read MNTPNT; do
-	    cat "$WATCHLIST" | grep -v -e '^#' -e '^\s*$' | awk '{print $1}' | grep -w $MNTPNT > /dev/null || echo "DELETE FROM status WHERE mntpnt = '$MNTPNT';" | mysql -u root -prfc1830rfc1830rfc1830 -D silenceDB
+	    cat "$WATCHLIST" | grep -v -e '^#' -e '^\s*$' | awk '{print $1}' | grep -w $MNTPNT > /dev/null || echo "DELETE FROM status WHERE mntpnt = '$MNTPNT';" | mysql -u root -prfc1830rfc1830rfc1830 -D silenceDB --connect-timeout=10
 	done
     )
     test $LOOP -eq 0 && exit 0 || sleep $LOOP
